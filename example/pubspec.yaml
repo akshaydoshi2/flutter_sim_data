@@ -19,7 +19,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  sim_data:
+  flutter_sim_data:
     # When depending on this package from a real application you should use:
     #   sim_data: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints

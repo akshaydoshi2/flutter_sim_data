@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:sim_data/sim_data.dart';
-import 'package:sim_data/sim_data_model.dart';
+import 'package:flutter_sim_data/sim_data.dart';
+import 'package:flutter_sim_data/sim_data_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,10 +42,11 @@ class _MyAppState extends State<MyApp> {
                   future: _simDataPlugin.getSimData(),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<SimDataModel>> snapshot) {
-                    if (snapshot.data == null)
+                    if (snapshot.data == null) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
+                    }
                     return ListView(
                       children: snapshot.data!.map((e) {
                         return Column(
