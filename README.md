@@ -4,6 +4,7 @@ This Flutter plugin provides API to
 - Android: Fetch SIM data to send SMS with dual sim and eSIM support.
 - iOS: Send SMS using `MFMessageComposeViewController` for iOS
 
+### SDK Compatibility
 - Dart '>=3.4.4 <4.0.0'
 - Flutter '>=3.3.0'
 - Android >=22
