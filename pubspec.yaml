@@ -1,7 +1,13 @@
 name: flutter_sim_data
 description: "Send SMS on Android & iOS. Easily fetch SIM data & compose SMS messages."
 version: 1.0.0
-homepage:
+homepage: https://github.com/akshaydoshi2/flutter_sim_data
+repository: https://github.com/akshaydoshi2/flutter_sim_data
+issue_tracker: https://github.com/akshaydoshi2/flutter_sim_data/issues
+
+topics:
+  - sim
+  - sms
 
 environment:
   sdk: '>=3.4.4 <4.0.0'

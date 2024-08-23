@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sim_data/sim_data.dart';
-import 'package:sim_data/sim_data_platform_interface.dart';
-import 'package:sim_data/sim_data_method_channel.dart';
+import 'package:flutter_sim_data/sim_data.dart';
+import 'package:flutter_sim_data/sim_data_platform_interface.dart';
+import 'package:flutter_sim_data/sim_data_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockSimDataPlatform

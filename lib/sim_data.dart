@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:sim_data/sim_data_model.dart';
+import 'package:flutter_sim_data/sim_data_model.dart';
 
 import 'sim_data_platform_interface.dart';
 
@@ -17,7 +17,7 @@ class SimData {
         return jsonDecode(res).map<SimDataModel>((e) {
           return SimDataModel.fromJson(e);
         }).toList();
-      }catch(e,s){
+      }catch(e){
         throw Exception(e);
       }
     }else{
