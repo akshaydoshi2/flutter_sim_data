@@ -11,7 +11,8 @@ class MethodChannelSimData extends SimDataPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 
@@ -22,8 +23,12 @@ class MethodChannelSimData extends SimDataPlatform {
   }
 
   @override
-  Future<bool?> sendSMS({required String phoneNumber, required String message, required int subId}) async {
-    return await methodChannel.invokeMethod<bool?>('send_sms', <String, dynamic>{
+  Future<bool?> sendSMS(
+      {required String phoneNumber,
+      required String message,
+      required int subId}) async {
+    return await methodChannel.invokeMethod<bool?>(
+        'send_sms', <String, dynamic>{
       "phone": phoneNumber,
       "msg": message,
       "subId": subId

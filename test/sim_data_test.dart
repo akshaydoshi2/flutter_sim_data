@@ -7,7 +7,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockSimDataPlatform
     with MockPlatformInterfaceMixin
     implements SimDataPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 
@@ -18,7 +17,10 @@ class MockSimDataPlatform
   }
 
   @override
-  Future<bool?> sendSMS({required String phoneNumber, required String message, required int subId}) {
+  Future<bool?> sendSMS(
+      {required String phoneNumber,
+      required String message,
+      required int subId}) {
     // TODO: implement sendSMS
     throw UnimplementedError();
   }

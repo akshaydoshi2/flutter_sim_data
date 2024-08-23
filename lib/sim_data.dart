@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter_sim_data/sim_data_model.dart';
@@ -6,34 +5,42 @@ import 'package:flutter_sim_data/sim_data_model.dart';
 import 'sim_data_platform_interface.dart';
 
 class SimData {
+  //Boiler-plate code
   Future<String?> getPlatformVersion() {
     return SimDataPlatform.instance.getPlatformVersion();
   }
 
-  Future<List<SimDataModel>> getSimData() async{
+  //Supported only for Android!
+  //Fetches the SIM data and returns [List<SimDataModel>]
+  Future<List<SimDataModel>> getSimData() async {
     final res = await SimDataPlatform.instance.getSimData();
-    if(res != null){
-      try{
+    if (res != null) {
+      try {
         return jsonDecode(res).map<SimDataModel>((e) {
           return SimDataModel.fromJson(e);
         }).toList();
-      }catch(e){
+      } catch (e) {
         throw Exception(e);
       }
-    }else{
+    } else {
       return <SimDataModel>[];
     }
   }
 
-  Future<String?> getRawSimData()async{
+  //Supported only for Android!
+  //Fetches the SIM data and returns raw unstructured JSON SIM data
+  Future<String?> getRawSimData() async {
     return await SimDataPlatform.instance.getSimData();
   }
 
-  Future<bool?> sendSMS({required String phoneNumber, required String message, required int subId})async{
-    return await SimDataPlatform.instance.sendSMS(
-      phoneNumber: phoneNumber,
-      message: message,
-      subId: subId
-    );
+  //Supported for both android and iOS
+  //This requires the SEND_SMS permissions for android.
+  //SMS is sent in the background for android and for iOS the plugin uses `MFMessageComposeViewController`
+  Future<bool?> sendSMS(
+      {required String phoneNumber,
+      required String message,
+      required int subId}) async {
+    return await SimDataPlatform.instance
+        .sendSMS(phoneNumber: phoneNumber, message: message, subId: subId);
   }
 }
