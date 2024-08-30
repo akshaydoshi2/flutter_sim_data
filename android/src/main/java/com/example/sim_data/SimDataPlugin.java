@@ -283,7 +283,7 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
         return true;
       }
     }
-    result.error("PERMISSION", "onRequestPermissionsResult is not granted", null);
+//    result.error("PERMISSION", "onRequestPermissionsResult is not granted", null);
     return false;
   }
 
