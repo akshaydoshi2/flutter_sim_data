@@ -47,4 +47,18 @@ class SimDataModel {
         displayName: json['DISPLAY_NAME'] ?? "",
         countryCode: json['COUNTRY_CODE'] ?? "",
       );
+
+  ///returns the sim data models as a Map
+  Map<String, dynamic> toMap() {
+    return {
+      "carrierName": carrierName,
+      "isESIM": isESIM,
+      "subscriptionId": subscriptionId,
+      "simSlotIndex": simSlotIndex,
+      "cardId": cardId,
+      "phoneNumber": phoneNumber,
+      "displayName": displayName,
+      "countryCode": countryCode,
+    };
+  }
 }

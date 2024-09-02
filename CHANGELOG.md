@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Model changes
+
 ## 1.0.2
 
 - Fixed an issue where accepting permissions crashed the app
