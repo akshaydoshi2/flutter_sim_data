@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Fixed an issue with ios podspec
+
 ## 1.0.3
 
 - Model changes

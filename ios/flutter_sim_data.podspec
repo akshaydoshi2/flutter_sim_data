@@ -3,7 +3,7 @@
 # Run `pod lib lint sim_data.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'sim_data'
+  s.name             = 'flutter_sim_data'
   s.version          = '0.0.1'
   s.summary          = 'A new Flutter project.'
   s.description      = <<-DESC
