@@ -38,11 +38,13 @@ class SimData {
   ///Supported for both android and iOS
   ///This requires the SEND_SMS permissions for android.
   ///SMS is sent in the background for android and for iOS the plugin uses `MFMessageComposeViewController`
+  /// showToast is by default set to true unless explicitly specified false.
   Future<bool?> sendSMS(
       {required String phoneNumber,
       required String message,
-      required int subId}) async {
+      required int subId,
+      bool showToast = true}) async {
     return await SimDataPlatform.instance
-        .sendSMS(phoneNumber: phoneNumber, message: message, subId: subId);
+        .sendSMS(phoneNumber: phoneNumber, message: message, subId: subId, showToast: showToast);
   }
 }

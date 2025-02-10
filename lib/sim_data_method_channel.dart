@@ -26,12 +26,14 @@ class MethodChannelSimData extends SimDataPlatform {
   Future<bool?> sendSMS(
       {required String phoneNumber,
       required String message,
-      required int subId}) async {
+      required int subId,
+      required bool showToast}) async {
     return await methodChannel.invokeMethod<bool?>(
         'send_sms', <String, dynamic>{
       "phone": phoneNumber,
       "msg": message,
-      "subId": subId
+      "subId": subId,
+      "showToast": showToast
     });
   }
 }

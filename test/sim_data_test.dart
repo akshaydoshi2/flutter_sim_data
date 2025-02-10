@@ -20,7 +20,8 @@ class MockSimDataPlatform
   Future<bool?> sendSMS(
       {required String phoneNumber,
       required String message,
-      required int subId}) {
+      required int subId
+      bool showToast = true}) {
     // TODO: implement sendSMS
     throw UnimplementedError();
   }

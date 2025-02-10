@@ -29,6 +29,7 @@ import java.util.Objects;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -41,15 +42,29 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
   private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 123;
   private static final int MY_PERMISSIONS_REQUEST_SEND_SMS_STATE = 101;
   private MethodChannel channel;
+  private EventChannel eventChannel;
   private Activity activity;
   private Result result;
-  private  Context context;
+  private Context context;
+  private EventChannel.EventSink eventSink;
   private MethodCall call;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sim_data");
+    eventChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(), "sim_data_sms_status");
     channel.setMethodCallHandler(this);
+    eventChannel.setStreamHandler(new EventChannel.StreamHandler() {
+      @Override
+      public void onListen(Object arguments, EventChannel.EventSink events) {
+        eventSink = events;
+      }
+
+      @Override
+      public void onCancel(Object arguments) {
+        eventSink = null;
+      }
+    });
     context = flutterPluginBinding.getApplicationContext();
   }
 
@@ -164,6 +179,7 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
     String number = call.argument("phone");
     String message = call.argument("msg");
     Integer subId = call.argument("subId");
+    Boolean showToast = call.argument("showToast");
 
     String sent = "SMS_SENT";
     String delivered = "SMS_DELIVERED";
@@ -172,16 +188,28 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
       SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(subId);
 
+      String packageName = context.getPackageName();
+    
+      Intent sentIntent = new Intent(sent);
+      sentIntent.setPackage(packageName); // Make explicit
+
+
+      // PendingIntents with explicit intents
       sendPendingIntent = PendingIntent.getBroadcast(
         context,
         1,
-        new Intent(sent),
+        sentIntent, // Use explicit intent
         PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
       );
+
+
+      Intent deliveredIntent = new Intent(delivered);
+      deliveredIntent.setPackage(packageName); // Make explicit
+      
       deliveryPendingIntent = PendingIntent.getBroadcast(
         context,
         2,
-        new Intent(delivered),
+        deliveredIntent, // Use explicit intent
         PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
       );
 
@@ -191,15 +219,27 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
           @Override
           public void onReceive(Context context, Intent intent) {
             int res = getResultCode();
-            if(res == Activity.RESULT_OK){
-              Toast.makeText(context, "SMS Sent", Toast.LENGTH_SHORT).show();
-            }else{
-              Toast.makeText(context, "SMS not sent. Something went wrong!", Toast.LENGTH_SHORT).show();
+            String status;
+            String toastMessage;
+            if (res == Activity.RESULT_OK) {
+              status = "SENT";
+              toastMessage = "SMS Sent Successfully";
+            } else {
+              status = "FAILED";
+              toastMessage = "SMS Failed to Send";
+            }
+
+            if (eventSink != null) {
+              eventSink.success(status);
+            }
+
+            if (showToast != null && showToast) {
+              Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();
             }
           }
         },
         new IntentFilter(sent),
-        Context.RECEIVER_EXPORTED
+        Context.RECEIVER_NOT_EXPORTED // Block external access
       );
 
       context.registerReceiver(
@@ -207,14 +247,26 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
           @Override
           public void onReceive(Context context, Intent intent) {
             int res = getResultCode();
-            if(res == Activity.RESULT_OK){
-              Toast.makeText(context, "SMS delivered", Toast.LENGTH_SHORT).show();
-            }else{
-              Toast.makeText(context, "SMS not delivered", Toast.LENGTH_SHORT).show();
+            String status;
+            String toastMessage;
+            if (res == Activity.RESULT_OK) {
+              status = "DELIVERED";
+              toastMessage = "SMS delivered";
+            } else {
+              status = "UNDELIVERED";
+              toastMessage = "SMS not delivered";
+            }
+
+            if (eventSink != null) {
+              eventSink.success(status);
+            }
+
+            if (showToast != null && showToast) {
+              Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();
             }
           }
         }, new IntentFilter(delivered),
-        Context.RECEIVER_EXPORTED
+        Context.RECEIVER_NOT_EXPORTED // Block external access
       );
 
       smsManager.sendTextMessage(number, null, message, sendPendingIntent, deliveryPendingIntent);
@@ -275,6 +327,7 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);
+    eventChannel.setStreamHandler(null);
   }
 
   @Override

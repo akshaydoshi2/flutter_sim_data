@@ -42,7 +42,8 @@ abstract class SimDataPlatform extends PlatformInterface {
   Future<bool?> sendSMS(
       {required String phoneNumber,
       required String message,
-      required int subId}) {
+      required int subId,
+    required bool showToast,}) {
     throw UnimplementedError('sendSMS() has not been implemented.');
   }
 }
