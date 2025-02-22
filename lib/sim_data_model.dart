@@ -39,10 +39,10 @@ class SimDataModel {
   ///Parses the json data into SimDataModel
   factory SimDataModel.fromJson(Map<String, dynamic> json) => SimDataModel(
         carrierName: json['CARRIER_NAME'] ?? "",
-        isESIM: json['IS_EMBEDDED'] ?? "",
-        subscriptionId: json['SUBSCRIPTION_ID'] ?? "",
-        simSlotIndex: json['SIM_SLOT_INDEX'] ?? "",
-        cardId: json['CARD_ID'] ?? "",
+        isESIM: json['IS_EMBEDDED'] ?? false,
+        subscriptionId: json['SUBSCRIPTION_ID'] ?? 0,
+        simSlotIndex: json['SIM_SLOT_INDEX'] ?? 0,
+        cardId: json['CARD_ID'] ?? 0,
         phoneNumber: json['PHONE_NUMBER'] ?? "",
         displayName: json['DISPLAY_NAME'] ?? "",
         countryCode: json['COUNTRY_CODE'] ?? "",

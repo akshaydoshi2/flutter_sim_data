@@ -185,37 +185,40 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
         PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
       );
 
-
-      context.registerReceiver(
-        new BroadcastReceiver() {
-          @Override
-          public void onReceive(Context context, Intent intent) {
+    BroadcastReceiver sentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             int res = getResultCode();
-            if(res == Activity.RESULT_OK){
-              Toast.makeText(context, "SMS Sent", Toast.LENGTH_SHORT).show();
-            }else{
-              Toast.makeText(context, "SMS not sent. Something went wrong!", Toast.LENGTH_SHORT).show();
+            if (res == Activity.RESULT_OK) {
+                Toast.makeText(context, "SMS Sent", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "SMS not sent. Something went wrong!", Toast.LENGTH_SHORT).show();
             }
-          }
-        },
-        new IntentFilter(sent),
-        Context.RECEIVER_EXPORTED
-      );
+        }
+    };
 
-      context.registerReceiver(
-        new BroadcastReceiver() {
-          @Override
-          public void onReceive(Context context, Intent intent) {
+    BroadcastReceiver deliveredReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             int res = getResultCode();
-            if(res == Activity.RESULT_OK){
-              Toast.makeText(context, "SMS delivered", Toast.LENGTH_SHORT).show();
-            }else{
-              Toast.makeText(context, "SMS not delivered", Toast.LENGTH_SHORT).show();
+            if (res == Activity.RESULT_OK) {
+                Toast.makeText(context, "SMS delivered", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "SMS not delivered", Toast.LENGTH_SHORT).show();
             }
-          }
-        }, new IntentFilter(delivered),
-        Context.RECEIVER_EXPORTED
-      );
+        }
+    };
+
+    IntentFilter sentFilter = new IntentFilter(sent);
+    IntentFilter deliveredFilter = new IntentFilter(delivered);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        context.registerReceiver(sentReceiver, sentFilter, Context.RECEIVER_EXPORTED);
+        context.registerReceiver(deliveredReceiver, deliveredFilter, Context.RECEIVER_EXPORTED);
+    } else {
+        context.registerReceiver(sentReceiver, sentFilter);
+        context.registerReceiver(deliveredReceiver, deliveredFilter);
+    }
 
       smsManager.sendTextMessage(number, null, message, sendPendingIntent, deliveryPendingIntent);
   }
