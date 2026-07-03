@@ -39,10 +39,12 @@ abstract class SimDataPlatform extends PlatformInterface {
   ///Supported for both android and iOS
   ///This requires the SEND_SMS permissions for android.
   ///SMS is sent in the background for android and for iOS the plugin uses `MFMessageComposeViewController`
-  Future<bool?> sendSMS(
-      {required String phoneNumber,
-      required String message,
-      required int subId}) {
+  Future<bool?> sendSMS({
+    required String phoneNumber,
+    required String message,
+    required int subId,
+    int timeoutSeconds = 0,
+  }) {
     throw UnimplementedError('sendSMS() has not been implemented.');
   }
 }

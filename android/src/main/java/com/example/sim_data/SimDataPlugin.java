@@ -13,6 +13,7 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -170,7 +172,30 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
     PendingIntent sendPendingIntent;
     PendingIntent deliveryPendingIntent;
 
-      SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(subId);
+//      if(message.getBytes().length > 80){
+//        ArrayList<String> messageParts = smsManager.divideMessage(message);
+//
+//        ArrayList<PendingIntent> sentIntents = new ArrayList<>();
+//        ArrayList<PendingIntent> deliveryIntents = new ArrayList<>();
+//
+//        for (int i = 0; i < messageParts.size(); i++) {
+//          PendingIntent sentPI = PendingIntent.getBroadcast(
+//                  context, i, new Intent("SMS_SENT"), PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//          PendingIntent deliveredPI = PendingIntent.getBroadcast(
+//                  context, i, new Intent("SMS_DELIVERED"), PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//          sentIntents.add(sentPI);
+//          deliveryIntents.add(deliveredPI);
+//        }
+//
+//        try{
+//          smsManager.sendMultipartTextMessage(number, null, messageParts, sentIntents, deliveryIntents);
+//        }catch(Exception e){
+//          Log.e("SMSPlugin", "Error sending SMS", e);
+//        }
+//        return;
+//      }
 
       sendPendingIntent = PendingIntent.getBroadcast(
         context,
@@ -193,8 +218,10 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
             int res = getResultCode();
             if(res == Activity.RESULT_OK){
               Toast.makeText(context, "SMS Sent", Toast.LENGTH_SHORT).show();
+              context.unregisterReceiver(this);
             }else{
               Toast.makeText(context, "SMS not sent. Something went wrong!", Toast.LENGTH_SHORT).show();
+              context.unregisterReceiver(this);
             }
           }
         },
@@ -209,15 +236,24 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
             int res = getResultCode();
             if(res == Activity.RESULT_OK){
               Toast.makeText(context, "SMS delivered", Toast.LENGTH_SHORT).show();
+              context.unregisterReceiver(this);
             }else{
               Toast.makeText(context, "SMS not delivered", Toast.LENGTH_SHORT).show();
+              context.unregisterReceiver(this);
             }
           }
         }, new IntentFilter(delivered),
         Context.RECEIVER_EXPORTED
       );
 
-      smsManager.sendTextMessage(number, null, message, sendPendingIntent, deliveryPendingIntent);
+      try{
+        SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(subId);
+        smsManager.sendTextMessage(number, null, message, sendPendingIntent, deliveryPendingIntent);
+        result.success(true);
+      }catch (Exception e){
+        Log.e("SMSPlugin", "Error sending SMS", e);
+        result.error("SEND_FAILED", e.getMessage(), null);
+      }
   }
 
   private void requestPermission(){
@@ -282,16 +318,19 @@ public class SimDataPlugin implements FlutterPlugin, MethodCallHandler, Activity
     if (requestCode == MY_PERMISSIONS_REQUEST_READ_PHONE_STATE) {
       if (grantResults.length > 0 && isGranted(grantResults)) {
         getSimData();
-        return true;
+      } else {
+        result.error("PERMISSION_DENIED", "READ_PHONE_STATE permission was denied", null);
       }
+      return true;
     }
-    if (requestCode == MY_PERMISSIONS_REQUEST_SEND_SMS_STATE){
+    if (requestCode == MY_PERMISSIONS_REQUEST_SEND_SMS_STATE) {
       if (grantResults.length > 0 && isGranted(grantResults)) {
         sendSMS();
-        return true;
+      } else {
+        result.error("PERMISSION_DENIED", "SEND_SMS permission was denied", null);
       }
+      return true;
     }
-//    result.error("PERMISSION", "onRequestPermissionsResult is not granted", null);
     return false;
   }
 

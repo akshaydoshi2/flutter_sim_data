@@ -38,11 +38,17 @@ class SimData {
   ///Supported for both android and iOS
   ///This requires the SEND_SMS permissions for android.
   ///SMS is sent in the background for android and for iOS the plugin uses `MFMessageComposeViewController`
-  Future<bool?> sendSMS(
-      {required String phoneNumber,
-      required String message,
-      required int subId}) async {
-    return await SimDataPlatform.instance
-        .sendSMS(phoneNumber: phoneNumber, message: message, subId: subId);
+  Future<bool?> sendSMS({
+    required String phoneNumber,
+    required String message,
+    required int subId,
+    int timeoutSeconds = 0,
+  }) async {
+    return await SimDataPlatform.instance.sendSMS(
+      phoneNumber: phoneNumber,
+      message: message,
+      subId: subId,
+      timeoutSeconds: timeoutSeconds
+    );
   }
 }
