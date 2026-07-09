@@ -8,6 +8,11 @@ public class SimDataPlugin: NSObject, FlutterPlugin, MFMessageComposeViewControl
     private var timeoutWorkItem: DispatchWorkItem?
     private weak var composer: MFMessageComposeViewController?
 
+    private let cellularChecker: Any? = {
+        if #available(iOS 12.0, *) { return CellularChecker() }
+        return nil
+    }()
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "sim_data", binaryMessenger: registrar.messenger())
         let instance = SimDataPlugin()
@@ -20,6 +25,8 @@ public class SimDataPlugin: NSObject, FlutterPlugin, MFMessageComposeViewControl
             result("iOS " + UIDevice.current.systemVersion)
         case "send_sms":
             sendMessage(call: call, result: result)
+        case "checkCellular":
+            checkCellular(call: call, result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -130,5 +137,25 @@ public class SimDataPlugin: NSObject, FlutterPlugin, MFMessageComposeViewControl
             top = presented
         }
         return top
+    }
+
+    private func checkCellular(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        guard #available(iOS 12.0, *), let checker = cellularChecker as? CellularChecker else {
+            result(FlutterError(code: "UNSUPPORTED", message: "Requires iOS 12+", details: nil))
+            return
+        }
+
+        let args = call.arguments as? [String: Any]
+        let host = args?["host"] as? String ?? "www.apple.com"
+        let port = (args?["port"] as? Int).map { UInt16($0) } ?? 443
+        let timeout = args?["timeoutSeconds"] as? Double ?? 5.0
+
+        checker.check(host: host, port: port, timeout: timeout) { res in
+            let payload: [String: Any] = [
+                "cellularInterfaceAvailable": res.cellularInterfaceAvailable,
+                "cellularDataReachable": res.cellularDataReachable
+            ]
+            DispatchQueue.main.async { result(payload) }
+        }
     }
 }

@@ -1,3 +1,7 @@
+## 2.0.1-dev.1
+
+- Bug fixes
+
 ## 2.0.0-dev.1
 
 - **Breaking:** `sendSMS` now returns `true` on success and throws a `PlatformException` (with documented error codes) on cancel/timeout/failure; adds an iOS-only `timeoutSeconds`; fixes iOS present-self crash and hanging `Future`s on both platforms

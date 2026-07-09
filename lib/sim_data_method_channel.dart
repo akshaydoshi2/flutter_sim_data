@@ -40,4 +40,20 @@ class MethodChannelSimData extends SimDataPlatform {
     if (result is String) return result == 'sent'; // iOS ("sent")
     return null;
   }
+
+  @override
+  Future<Map<String, dynamic>?> checkCellular({
+    String host = 'www.apple.com',
+    int port = 443,
+    double timeoutSeconds = 5.0,
+  }) async {
+    return await methodChannel.invokeMapMethod<String, dynamic>(
+      'checkCellular',
+      <String, dynamic>{
+        "host": host,
+        "port": port,
+        "timeoutSeconds": timeoutSeconds,
+      },
+    );
+  }
 }

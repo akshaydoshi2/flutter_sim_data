@@ -47,4 +47,15 @@ abstract class SimDataPlatform extends PlatformInterface {
   }) {
     throw UnimplementedError('sendSMS() has not been implemented.');
   }
+
+  ///Supported on iOS only.
+  ///Runs the passive (interface available) + active (data reachable) cellular checks.
+  ///Returns the raw map; the public API wraps it into [CellularCheckResult].
+  Future<Map<String, dynamic>?> checkCellular({
+    String host = 'www.apple.com',
+    int port = 443,
+    double timeoutSeconds = 5.0,
+  }) {
+    throw UnimplementedError('checkCellular() has not been implemented.');
+  }
 }

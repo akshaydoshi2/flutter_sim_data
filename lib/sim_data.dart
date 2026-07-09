@@ -51,4 +51,20 @@ class SimData {
       timeoutSeconds: timeoutSeconds
     );
   }
+
+  ///Supported on iOS only.
+  ///Runs the passive + active cellular checks and returns a [CellularCheckResult].
+  ///Use `.hasActiveMobileData` for a simple "active mobile data" gate.
+  Future<CellularCheckResult> checkCellular({
+    String host = 'www.apple.com',
+    int port = 443,
+    double timeoutSeconds = 5.0,
+  }) async {
+    final map = await SimDataPlatform.instance.checkCellular(
+      host: host,
+      port: port,
+      timeoutSeconds: timeoutSeconds,
+    );
+    return CellularCheckResult.fromMap(map ?? const {});
+  }
 }

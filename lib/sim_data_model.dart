@@ -39,10 +39,10 @@ class SimDataModel {
   ///Parses the json data into SimDataModel
   factory SimDataModel.fromJson(Map<String, dynamic> json) => SimDataModel(
         carrierName: json['CARRIER_NAME'] ?? "",
-        isESIM: json['IS_EMBEDDED'] ?? "",
-        subscriptionId: json['SUBSCRIPTION_ID'] ?? "",
-        simSlotIndex: json['SIM_SLOT_INDEX'] ?? "",
-        cardId: json['CARD_ID'] ?? "",
+        isESIM: json['IS_EMBEDDED'] ?? false,
+        subscriptionId: json['SUBSCRIPTION_ID'] ?? 0,
+        simSlotIndex: json['SIM_SLOT_INDEX'] ?? 0,
+        cardId: json['CARD_ID'] ?? 0,
         phoneNumber: json['PHONE_NUMBER'] ?? "",
         displayName: json['DISPLAY_NAME'] ?? "",
         countryCode: json['COUNTRY_CODE'] ?? "",
@@ -61,4 +61,37 @@ class SimDataModel {
       "countryCode": countryCode,
     };
   }
+}
+
+/// Result of the iOS cellular availability check.
+class CellularCheckResult {
+  /// Passive check — a cellular interface/path exists (active data SIM present).
+  final bool cellularInterfaceAvailable;
+
+  /// Active check — traffic actually reached a host over cellular.
+  final bool cellularDataReachable;
+
+  /// Creates a [CellularCheckResult] from the passive and active check flags.
+  CellularCheckResult({
+    required this.cellularInterfaceAvailable,
+    required this.cellularDataReachable,
+  });
+
+  /// Practical "is there active mobile data" signal.
+  bool get hasActiveMobileData => cellularDataReachable;
+
+  /// Parses the raw map returned by the platform channel into a
+  /// [CellularCheckResult].
+  factory CellularCheckResult.fromMap(Map<String, dynamic> map) =>
+      CellularCheckResult(
+        cellularInterfaceAvailable:
+        map['cellularInterfaceAvailable'] as bool? ?? false,
+        cellularDataReachable: map['cellularDataReachable'] as bool? ?? false,
+      );
+
+  /// Returns this result as a `Map`.
+  Map<String, dynamic> toMap() => {
+    "cellularInterfaceAvailable": cellularInterfaceAvailable,
+    "cellularDataReachable": cellularDataReachable,
+  };
 }
